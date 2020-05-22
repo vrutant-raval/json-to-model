@@ -8,12 +8,26 @@
           placeholder="Input JSON"
           cdkTextareaAutosize
           cdkAutosizeMinRows="10"
+          cdkAutosizeMaxRows="15"
           formControlName="inputJSON"
         ></textarea>
       </div>
     </mat-form-field>
   </div>
   <br />
+  <mat-form-field>
+    <mat-label>Append keys with</mat-label>
+    <div [formGroup]="form">
+      <input
+        matInput
+        type="text"
+        placeholder="Append keys with"
+        formControlName="appendStr"
+      />
+    </div>
+  </mat-form-field>
+  <br />
+
   <div class="btn-primary">
     <button mat-raised-button color="primary" (click)="processInput()">
       Process Input

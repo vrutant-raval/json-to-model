@@ -10,20 +10,26 @@ export class HomeComponent implements OnInit {
   form: FormGroup;
   outputObj = {};
   outputData = '';
+  isObj = false;
+  isArr = false;
+  appendStr = '';
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
       inputJSON: new FormControl(''),
       output: new FormControl(''),
+      appendStr: new FormControl(''),
     });
   }
 
   processInput() {
     this.outputData = '';
-    this.outputData += '{';
+
     this.outputObj = {};
     let inputStr = this.form.get('inputJSON').value;
+    this.appendStr = this.form.get('appendStr').value;
+
     try {
       let inputJSON = JSON.parse(inputStr);
       let obj = Object.entries(inputJSON);
@@ -36,7 +42,7 @@ export class HomeComponent implements OnInit {
       this.form.get('output').setValue('Invlid Input JSON');
     }
     // this.form.get('output').setValue(JSON.stringify(this.outputObj));
-    this.outputData += '}';
+
     this.form.get('output').setValue(this.outputData);
   }
 
@@ -44,42 +50,46 @@ export class HomeComponent implements OnInit {
     let isArr = val instanceof Array;
     let isObj = val instanceof Object;
     if (isArr) {
+      this.outputData += this.prettifyKey(key, false) + ': [{';
       (val as Array<any>).forEach((x) => {
         let obj = Object.entries(x);
         obj.forEach(([prop, val]) => {
           this.checkValType(prop, val);
         });
       });
+      this.outputData += '}];';
     } else if (!isArr && isObj) {
+      this.outputData += this.prettifyKey(key, false) + ': {';
       let obj = Object.entries(val);
-      obj.forEach(([prop, val]) => {
-        if (val instanceof Object) {
-          this.outputData += this.prettifyKey(prop) + ': {' + '\n';
-        }
-
-        this.checkValType(prop, val);
-        if (val instanceof Object) {
-          this.outputData += '};' + '\n';
-        }
+      obj.forEach(([prop2, val2]) => {
+        this.checkValType(prop2, val2);
       });
+      this.outputData += '};';
     } else {
-      this.outputData +=
-        this.prettifyKey(key) + ':' + this.getValDataType(val) + ';' + '\n';
-      this.outputObj[key] = 'string';
+      this.outputData += this.prettifyKey(key) + ':' + this.getValDataType(val);
 
-      // console.log(key, val);
+      this.outputData += ';';
+
+      this.outputObj[key] = 'string';
     }
   }
 
-  prettifyKey(key: string) {
+  prettifyKey(key: string, append = true) {
     let betterKey = '';
     if (key.match(/[!@#$%^&*(),.?":{}|\-<> ]/)) {
       betterKey += '"';
       betterKey += key;
+      if (append && this.appendStr && !betterKey.endsWith(this.appendStr)) {
+        betterKey = betterKey + this.appendStr;
+      }
       betterKey += '"';
     } else {
       betterKey = key;
+      if (append && this.appendStr && !betterKey.endsWith(this.appendStr)) {
+        betterKey = betterKey + this.appendStr;
+      }
     }
+
     return betterKey;
   }
 
