@@ -57,18 +57,20 @@ export class HomeComponent implements OnInit {
             this.checkValType(prop, val);
           });
         } else {
-          this.checkValType(null, x);
+          // this.checkValType(null, x);
         }
       });
       this.outputData += '}];';
       this.tempColl = [];
     } else if (!isArr && isObj) {
+      this.tempColl = [];
       this.outputData += this.prettifyKey(key, false) + ': {';
       let obj = Object.entries(val);
       obj.forEach(([prop2, val2]) => {
         this.checkValType(prop2, val2);
       });
       this.outputData += '};';
+      this.tempColl = [];
     } else {
       this.outputData += this.generateProp(key, val);
     }
