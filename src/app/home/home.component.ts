@@ -50,12 +50,17 @@ export class HomeComponent implements OnInit {
     let isArr = val instanceof Array;
     let isObj = val instanceof Object;
     if (isArr) {
+      debugger;
       this.outputData += this.prettifyKey(key, false) + ': [{';
       (val as Array<any>).forEach((x) => {
-        let obj = Object.entries(x);
-        obj.forEach(([prop, val]) => {
-          this.checkValType(prop, val);
-        });
+        if (x instanceof Object) {
+          let obj = Object.entries(x);
+          obj.forEach(([prop, val]) => {
+            this.checkValType(prop, val);
+          });
+        } else {
+          this.checkValType(null, x);
+        }
       });
       this.outputData += '}];';
     } else if (!isArr && isObj) {
@@ -66,11 +71,17 @@ export class HomeComponent implements OnInit {
       });
       this.outputData += '};';
     } else {
-      this.outputData += this.prettifyKey(key) + ':' + this.getValDataType(val);
-
-      this.outputData += ';';
-
-      this.outputObj[key] = 'string';
+      if (key) {
+        this.outputData +=
+          this.prettifyKey(key) + ':' + this.getValDataType(val);
+        this.outputData += ';';
+        this.outputObj[key] = 'string';
+      } else {
+        this.outputData +=
+          this.prettifyKey(val) + ':' + this.getValDataType(val);
+        this.outputData += ';';
+        this.outputObj[val] = 'string';
+      }
     }
   }
 
