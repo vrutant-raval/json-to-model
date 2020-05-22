@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-home',
@@ -8,11 +9,11 @@ import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 })
 export class HomeComponent implements OnInit {
   form: FormGroup;
-  outputObj = {};
   outputData = '';
   isObj = false;
   isArr = false;
   appendStr = '';
+  tempColl: string[] = [];
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
@@ -25,8 +26,6 @@ export class HomeComponent implements OnInit {
 
   processInput() {
     this.outputData = '';
-
-    this.outputObj = {};
     let inputStr = this.form.get('inputJSON').value;
     this.appendStr = this.form.get('appendStr').value;
 
@@ -41,7 +40,6 @@ export class HomeComponent implements OnInit {
       console.log(ex);
       this.form.get('output').setValue('Invlid Input JSON');
     }
-    // this.form.get('output').setValue(JSON.stringify(this.outputObj));
 
     this.form.get('output').setValue(this.outputData);
   }
@@ -50,6 +48,7 @@ export class HomeComponent implements OnInit {
     let isArr = val instanceof Array;
     let isObj = val instanceof Object;
     if (isArr) {
+      this.tempColl = [];
       this.outputData += this.prettifyKey(key, false) + ': [{';
       (val as Array<any>).forEach((x) => {
         if (x instanceof Object) {
@@ -62,6 +61,7 @@ export class HomeComponent implements OnInit {
         }
       });
       this.outputData += '}];';
+      this.tempColl = [];
     } else if (!isArr && isObj) {
       this.outputData += this.prettifyKey(key, false) + ': {';
       let obj = Object.entries(val);
@@ -70,18 +70,24 @@ export class HomeComponent implements OnInit {
       });
       this.outputData += '};';
     } else {
+      this.outputData += this.generateProp(key, val);
+    }
+  }
+
+  generateProp(key: string, val: string) {
+    let prop = '';
+    if (this.tempColl && this.tempColl.findIndex((x) => x === key) >= 0) {
+    } else {
       if (key) {
-        this.outputData +=
-          this.prettifyKey(key) + ':' + this.getValDataType(val);
-        this.outputData += ';';
-        this.outputObj[key] = 'string';
+        prop = this.prettifyKey(key) + ':' + this.getValDataType(val);
+        prop += ';';
+        this.tempColl.push(key);
       } else {
-        this.outputData +=
-          this.prettifyKey(val) + ':' + this.getValDataType(val);
-        this.outputData += ';';
-        this.outputObj[val] = 'string';
+        prop = this.prettifyKey(val) + ':' + this.getValDataType(val);
+        prop += ';';
       }
     }
+    return prop;
   }
 
   prettifyKey(key: string, append = true) {
@@ -104,16 +110,15 @@ export class HomeComponent implements OnInit {
   }
 
   getValDataType(val: string) {
-    let type = '';
-    if (
-      // val.match(/^(?:(1|y(?:es)?|t(?:rue)?|on)|(0|n(?:o)?|f(?:alse)?|off))$/i)
-      val.toString().match(/^(true|false)$/i)
-    ) {
-      type = 'boolean';
-    } else if (val.toString().match(/^[0-9]*$/)) {
-      type = 'number';
-    } else {
-      type = 'string';
+    let type = 'string';
+    if (val) {
+      if (val.toString().match(/^(true|false)$/i)) {
+        type = 'boolean';
+      } else if (val.toString().match(/^[0-9]*$/)) {
+        type = 'number';
+      } else {
+        type = 'string';
+      }
     }
     return type;
   }
