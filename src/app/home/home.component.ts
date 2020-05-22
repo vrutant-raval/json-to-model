@@ -50,7 +50,6 @@ export class HomeComponent implements OnInit {
     let isArr = val instanceof Array;
     let isObj = val instanceof Object;
     if (isArr) {
-      debugger;
       this.outputData += this.prettifyKey(key, false) + ': [{';
       (val as Array<any>).forEach((x) => {
         if (x instanceof Object) {
