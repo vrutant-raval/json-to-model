@@ -15,38 +15,80 @@
     </mat-form-field>
   </div>
   <br />
-  <mat-form-field>
-    <mat-label>Append keys with</mat-label>
-    <div [formGroup]="form">
-      <input
-        matInput
-        type="text"
-        placeholder="Append keys with"
-        formControlName="appendStr"
-      />
+  <div class="flex">
+    <div class="column">
+      <mat-form-field>
+        <mat-label>Append keys with</mat-label>
+        <div [formGroup]="form">
+          <input
+            matInput
+            type="text"
+            placeholder="Append keys with"
+            formControlName="appendStr"
+          />
+        </div>
+      </mat-form-field>
     </div>
-  </mat-form-field>
-  <br />
-
-  <div class="btn-primary">
-    <button mat-raised-button color="primary" (click)="processInput()">
-      Process Input
-    </button>
+    <div class="column">
+      <mat-form-field>
+        <mat-label>Append properties with</mat-label>
+        <div [formGroup]="form">
+          <input
+            matInput
+            type="text"
+            placeholder="Comma seperated Appenders"
+            formControlName="appendStrFields"
+          />
+        </div>
+      </mat-form-field>
+    </div>
   </div>
+
+  <br />
+  <div class="flex">
+    <div class="btn-primary">
+      <button mat-raised-button color="primary" (click)="processInput()">
+        Process Input
+      </button>
+    </div>
+
+    <div class="btn-secondary">
+      <button mat-raised-button color="accent" (click)="clearInput()">
+        Clear
+      </button>
+    </div>
+  </div>
+
   <br />
   <hr />
-  <div>
-    <mat-form-field class="textarea-style">
-      <mat-label>Output</mat-label>
-      <div [formGroup]="form">
-        <textarea
-          matInput
-          placeholder="Output"
-          cdkTextareaAutosize
-          cdkAutosizeMinRows="10"
-          formControlName="output"
-        ></textarea>
-      </div>
-    </mat-form-field>
+  <div class="flex">
+    <div class="column">
+      <mat-form-field class="textarea-style">
+        <mat-label>Output Model</mat-label>
+        <div [formGroup]="form">
+          <textarea
+            matInput
+            placeholder="Output Model"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="10"
+            formControlName="MODELSTR"
+          ></textarea>
+        </div>
+      </mat-form-field>
+    </div>
+    <div class="column">
+      <mat-form-field class="textarea-style">
+        <mat-label>Output Fields</mat-label>
+        <div [formGroup]="form">
+          <textarea
+            matInput
+            placeholder="Output Fields"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="10"
+            formControlName="FIELDSSTR"
+          ></textarea>
+        </div>
+      </mat-form-field>
+    </div>
   </div>
 </div>
