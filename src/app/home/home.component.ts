@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
     this.outputData[ObjType.FIELDSSTR] = '';
 
     this.form = this.fb.group({
-      inputJSON: new FormControl('{"id":1}'),
+      inputJSON: new FormControl(''),
       MODELSTR: new FormControl(''),
       FIELDSSTR: new FormControl(''),
       appendStr: new FormControl(''),
@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit {
       if (type === ObjType.MODELSTR) {
         objData[type] += this.prettifyKey(key, '', false) + ': {';
       } else if (type === ObjType.FIELDSSTR) {
-        objData[type] += this.prettifyKey(key, '', false) + ' : {';
+        objData[type] += this.prettifyKey(key, '', false) + ' : {' + '\n';
       }
 
       let obj = Object.entries(val);
@@ -115,7 +115,7 @@ export class HomeComponent implements OnInit {
       if (type === ObjType.MODELSTR) {
         objData[type] += '};';
       } else if (type === ObjType.FIELDSSTR) {
-        objData[type] += '},';
+        objData[type] += '\n' + '},' + '\n';
       }
       partOfObj = false;
       this.tempColl = [];
@@ -126,7 +126,6 @@ export class HomeComponent implements OnInit {
       } else if (type === ObjType.FIELDSSTR) {
         if (this.appendStrFieldsStr) {
           this.appendStrFieldsStr.split(',').forEach((x) => {
-            debugger;
             propVal += this.generateProp(key, val, type, x, partOfObj);
           });
         }
