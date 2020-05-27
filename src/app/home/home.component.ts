@@ -80,7 +80,7 @@ export class HomeComponent implements OnInit {
       this.tempColl = [];
       partOfObj = true;
       objData[type];
-      objData[type] += this.prettifyKey(key, '', false) + ': [{';
+      objData[type] += this.prettifyKey(key, '', type, false) + ': [{';
       (val as Array<any>).forEach((x) => {
         if (x instanceof Object) {
           let obj = Object.entries(x);
@@ -103,9 +103,9 @@ export class HomeComponent implements OnInit {
       this.tempColl = [];
       partOfObj = true;
       if (type === ObjType.MODELSTR) {
-        objData[type] += this.prettifyKey(key, '', false) + ': {';
+        objData[type] += this.prettifyKey(key, '', type, false) + ': {';
       } else if (type === ObjType.FIELDSSTR) {
-        objData[type] += this.prettifyKey(key, '', false) + ' : {' + '\n';
+        objData[type] += this.prettifyKey(key, '', type, false) + ' : {' + '\n';
       }
 
       let obj = Object.entries(val);
@@ -142,7 +142,8 @@ export class HomeComponent implements OnInit {
     partOfObj: boolean
   ) {
     let prop = '';
-    let prittierKey = this.prettifyKey(key, appenderStr);
+
+    let prittierKey = this.prettifyKey(key, appenderStr, type);
     if (
       this.tempColl &&
       this.tempColl.findIndex((x) => x === prittierKey) >= 0
@@ -169,17 +170,34 @@ export class HomeComponent implements OnInit {
     return prop;
   }
 
-  prettifyKey(key: string, appendStr: string, append = true) {
+  prettifyKey(key: string, appendStr: string, type: ObjType, append = true) {
     let betterKey = '';
     if (key.match(/[!@#$%^&*(),.?":{}|\-<> ]/)) {
       betterKey += '"';
       betterKey += key;
+
+      if (type === ObjType.FIELDSSTR) {
+        this.appendStrFieldsStr.split(',').forEach((x) => {
+          if (betterKey.endsWith(x)) {
+            betterKey = betterKey.replace(x, '');
+          }
+        });
+      }
+
       if (append && appendStr && !betterKey.endsWith(appendStr)) {
         betterKey = betterKey + appendStr;
       }
       betterKey += '"';
     } else {
       betterKey = key;
+
+      if (type === ObjType.FIELDSSTR) {
+        this.appendStrFieldsStr.split(',').forEach((x) => {
+          if (betterKey.endsWith(x)) {
+            betterKey = betterKey.replace(x, '');
+          }
+        });
+      }
       if (append && appendStr && !betterKey.endsWith(appendStr)) {
         betterKey = betterKey + appendStr;
       }
